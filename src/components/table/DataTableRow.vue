@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button'
+import { useEditableRow } from '@/composables/useEditableRow'
 import { actions } from '@/constants/constants'
 import { useTableStore } from '@/stores/useTableStore'
 import type { IAction, ITableRow } from '@/types/table'
-import { computed, nextTick, ref } from 'vue'
+import { computed, ref } from 'vue'
 import Input from '../ui/input/Input.vue'
 
 interface Props {
@@ -13,44 +14,18 @@ interface Props {
 const props = defineProps<Props>()
 const store = useTableStore()
 const isHovered = ref(false)
-const editField = ref<string | null>(null)
-const editValue = ref<string | number>('')
 
-const titleInput = ref<HTMLInputElement>()
-const viewsInput = ref<HTMLInputElement>()
+const titleInputRef = ref<HTMLInputElement>()
+const textInputRef = ref<HTMLInputElement>()
+const viewsInputRef = ref<HTMLInputElement>()
+
+const { editField, editValue, startEdit, saveEdit, cancelEdit } = useEditableRow(props.row, {
+  title: titleInputRef,
+  text: textInputRef,
+  views: viewsInputRef,
+})
 
 const isEditing = computed(() => store.editingRowId === props.row.id && editField.value !== null)
-
-const startEdit = async (field: string) => {
-  store.startEditing(props.row.id)
-  editField.value = field
-  editValue.value = field === 'title' ? props.row.title : props.row.views
-
-  await nextTick()
-
-  if (field === 'title' && titleInput.value) {
-    titleInput.value.focus()
-    titleInput.value.select()
-  } else if (field === 'views' && viewsInput.value) {
-    viewsInput.value.focus()
-    viewsInput.value.select()
-  }
-}
-
-const saveEdit = async () => {
-  if (!editField.value) return
-
-  const payload: Partial<ITableRow> = {}
-
-  if (editField.value === 'title') {
-    payload.title = editValue.value as string
-  } else if (editField.value === 'views') {
-    payload.views = editValue.value as number
-  }
-
-  await store.updateRow(props.row?.id, payload)
-  editField.value = null
-}
 
 const handleDelete = () => {
   store.deleteRow(props.row.id)
@@ -70,29 +45,15 @@ const renderedActions = getActions()
   <tr class="table-row" @mouseenter="isHovered = true" @mouseleave="isHovered = false">
     <td class="table-cell">
       <div class="cell-content">
-        <span
-          v-if="row.col?.color"
-          class="color-marker"
-          :style="{ backgroundColor: row.col.color }"
-        ></span>
-        {{ row.col?.text || '' }}
-      </div>
-    </td>
-    <td class="table-cell">
-      <div class="cell-content">
-        <span
-          v-if="row.col?.color"
-          class="color-marker"
-          :style="{ backgroundColor: row.col.color }"
-        ></span>
         <Input
-          v-if="isEditing && editField === 'title'"
+          v-if="editField === 'title'"
+          ref="inputRefs.title"
           v-model="editValue"
           class="edit-input"
           @keyup.enter="saveEdit"
           @blur="saveEdit"
-          ref="titleInput"
         />
+
         <span v-else @dblclick="startEdit('title')">{{ row.title || '' }}</span>
       </div>
     </td>
@@ -103,14 +64,29 @@ const renderedActions = getActions()
           class="color-marker"
           :style="{ backgroundColor: row.col.color }"
         ></span>
-        <input
-          v-if="isEditing && editField === 'views'"
-          v-model.number="editValue"
+
+        <Input
+          v-if="editField === 'text'"
+          ref="textInputRef"
+          v-model="editValue"
+          class="edit-input"
+          @keyup.enter="saveEdit"
+          @keyup.escape="cancelEdit"
+          @blur="saveEdit"
+        />
+        <span v-else @dblclick="startEdit('text')">{{ row.col?.text || '' }}</span>
+      </div>
+    </td>
+    <td class="table-cell">
+      <div class="cell-content">
+        <Input
+          v-if="editField === 'views'"
+          ref="inputRefs.views"
+          v-model="editValue"
           type="number"
           class="edit-input"
           @keyup.enter="saveEdit"
           @blur="saveEdit"
-          ref="viewsInput"
         />
         <span v-else @dblclick="startEdit('views')">{{ row.views || 0 }}</span>
       </div>

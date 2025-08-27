@@ -11,29 +11,6 @@ export const useTableStore = defineStore('table', () => {
   const error = ref<string | null>(null)
   const editingRowId = ref<number | null>(null)
 
-  const fetchData = async () => {
-    loading.value = true
-    error.value = null
-    try {
-      const response = await axios.get<IRawTableRow[]>(baseUrl)
-      data.value = formatFetchData(response.data)
-    } catch (err) {
-      const e = err as AxiosError
-      error.value = e.message
-    } finally {
-      loading.value = false
-    }
-  }
-
-  const deleteRow = async (id: number) => {
-    try {
-      await axios.delete(`${baseUrl}/${id}`)
-      data.value = data.value.filter((row) => row.id !== id)
-    } catch (err) {
-      console.error('Ошибка удаления:', err)
-    }
-  }
-
   const updateRow = async (id: number, payload: Partial<ITableRow>) => {
     try {
       const existingRow = data.value.find((row) => row.id === id)
@@ -62,6 +39,29 @@ export const useTableStore = defineStore('table', () => {
       editingRowId.value = null
     } catch (err) {
       console.error('Ошибка обновления:', err)
+    }
+  }
+
+  const fetchData = async () => {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await axios.get<IRawTableRow[]>(baseUrl)
+      data.value = formatFetchData(response.data)
+    } catch (err) {
+      const e = err as AxiosError
+      error.value = e.message
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const deleteRow = async (id: number) => {
+    try {
+      await axios.delete(`${baseUrl}/${id}`)
+      data.value = data.value.filter((row) => row.id !== id)
+    } catch (err) {
+      console.error('Ошибка удаления:', err)
     }
   }
 

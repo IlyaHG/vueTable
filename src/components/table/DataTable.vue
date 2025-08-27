@@ -42,8 +42,8 @@ const handleAdd = () => {
       <table class="data-table">
         <thead>
           <tr>
-            <th>Колонка</th>
             <th>Заголовок</th>
+            <th>Текст</th>
             <th>Просмотры</th>
             <th>Действия</th>
           </tr>

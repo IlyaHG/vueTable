@@ -1,16 +1,16 @@
 {
   "rows": [
     {
-      "id": 1,
+      "id": "1",
       "col1": {
         "color": "#23f453",
         "text": "text for 1st column"
       },
-      "title": "a first title",
+      "title": "a first titleasd",
       "views": 123
     },
     {
-      "id": 2,
+      "id": "2",
       "col2": {
         "color": "#23f453",
         "text": "38.2"
@@ -19,7 +19,7 @@
       "views": 534435
     },
     {
-      "id": 3,
+      "id": "3",
       "col3": {
         "color": "#23f453",
         "text": "text for 3rd column"
@@ -28,7 +28,7 @@
       "views": 1235234
     },
     {
-      "id": 4,
+      "id": "4",
       "col4": {
         "color": "#23f453",
         "text": "text for 1st column"
@@ -37,7 +37,7 @@
       "views": 100
     },
     {
-      "id": 5,
+      "id": "5",
       "col5": {
         "color": "#23f453",
         "text": "text for 1st column"
@@ -46,7 +46,7 @@
       "views": 100
     },
     {
-      "id": 6,
+      "id": "6",
       "title": "Новая строка",
       "views": 0,
       "col6": {
@@ -55,7 +55,7 @@
       }
     },
     {
-      "id": 7,
+      "id": "7",
       "title": "Новая строка",
       "views": 0,
       "col7": {
