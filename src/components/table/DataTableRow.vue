@@ -1,0 +1,185 @@
+<script setup lang="ts">
+import { Button } from '@/components/ui/button'
+import { actions } from '@/constants/constants'
+import { useTableStore } from '@/stores/useTableStore'
+import type { IAction, ITableRow } from '@/types/table'
+import { computed, nextTick, ref } from 'vue'
+import Input from '../ui/input/Input.vue'
+
+interface Props {
+  row: ITableRow & { id: number }
+}
+
+const props = defineProps<Props>()
+const store = useTableStore()
+const isHovered = ref(false)
+const editField = ref<string | null>(null)
+const editValue = ref<string | number>('')
+
+const titleInput = ref<HTMLInputElement>()
+const viewsInput = ref<HTMLInputElement>()
+
+const isEditing = computed(() => store.editingRowId === props.row.id && editField.value !== null)
+
+const startEdit = async (field: string) => {
+  store.startEditing(props.row.id)
+  editField.value = field
+  editValue.value = field === 'title' ? props.row.title : props.row.views
+
+  await nextTick()
+
+  if (field === 'title' && titleInput.value) {
+    titleInput.value.focus()
+    titleInput.value.select()
+  } else if (field === 'views' && viewsInput.value) {
+    viewsInput.value.focus()
+    viewsInput.value.select()
+  }
+}
+
+const saveEdit = async () => {
+  if (!editField.value) return
+
+  const payload: Partial<ITableRow> = {}
+
+  if (editField.value === 'title') {
+    payload.title = editValue.value as string
+  } else if (editField.value === 'views') {
+    payload.views = editValue.value as number
+  }
+
+  await store.updateRow(props.row?.id, payload)
+  editField.value = null
+}
+
+const handleDelete = () => {
+  store.deleteRow(props.row.id)
+}
+
+function getActions(): IAction[] {
+  return actions.map((a) => ({
+    ...a,
+    onClick: a.label === 'Редактировать' ? () => startEdit('title') : handleDelete,
+  }))
+}
+
+const renderedActions = getActions()
+</script>
+
+<template>
+  <tr class="table-row" @mouseenter="isHovered = true" @mouseleave="isHovered = false">
+    <td class="table-cell">
+      <div class="cell-content">
+        <span
+          v-if="row.col?.color"
+          class="color-marker"
+          :style="{ backgroundColor: row.col.color }"
+        ></span>
+        {{ row.col?.text || '' }}
+      </div>
+    </td>
+    <td class="table-cell">
+      <div class="cell-content">
+        <span
+          v-if="row.col?.color"
+          class="color-marker"
+          :style="{ backgroundColor: row.col.color }"
+        ></span>
+        <Input
+          v-if="isEditing && editField === 'title'"
+          v-model="editValue"
+          class="edit-input"
+          @keyup.enter="saveEdit"
+          @blur="saveEdit"
+          ref="titleInput"
+        />
+        <span v-else @dblclick="startEdit('title')">{{ row.title || '' }}</span>
+      </div>
+    </td>
+    <td class="table-cell">
+      <div class="cell-content">
+        <span
+          v-if="row.col?.color"
+          class="color-marker"
+          :style="{ backgroundColor: row.col.color }"
+        ></span>
+        <input
+          v-if="isEditing && editField === 'views'"
+          v-model.number="editValue"
+          type="number"
+          class="edit-input"
+          @keyup.enter="saveEdit"
+          @blur="saveEdit"
+          ref="viewsInput"
+        />
+        <span v-else @dblclick="startEdit('views')">{{ row.views || 0 }}</span>
+      </div>
+    </td>
+    <td class="table-cell actions-cell">
+      <div class="actions" v-show="!isEditing && isHovered">
+        <Button v-for="(action, index) in renderedActions" :key="index" v-bind="action">
+          {{ action.label }}
+        </Button>
+      </div>
+    </td>
+  </tr>
+</template>
+
+<style scoped>
+.table-row:hover {
+  background-color: #f8f9fa;
+}
+
+.table-cell {
+  padding: 1.25rem;
+  border-bottom: 1px solid #e9ecef;
+  position: relative;
+  width: 2.5rem;
+}
+
+.cell-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.color-marker {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.actions-cell {
+  width: 2.5rem;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.action-btn {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.table-row:hover .action-btn {
+  opacity: 1;
+}
+
+.edit-input {
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  min-width: 100px;
+}
+
+.edit-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+</style>
