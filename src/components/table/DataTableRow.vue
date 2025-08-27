@@ -5,7 +5,7 @@ import { actions } from '@/constants/constants'
 import { useTableStore } from '@/stores/useTableStore'
 import type { IAction, ITableRow } from '@/types/table'
 import { computed, ref } from 'vue'
-import Input from '../ui/input/Input.vue'
+import DataTableCell from './DataTableCell.vue'
 
 interface Props {
   row: ITableRow & { id: number }
@@ -39,58 +39,56 @@ function getActions(): IAction[] {
 }
 
 const renderedActions = getActions()
+
+const handleStartEdit = (field: string) => {
+  startEdit(field as 'title' | 'text' | 'views')
+}
+
+const updateEditValue = (value: string | number) => {
+  editValue.value = value
+}
 </script>
 
 <template>
   <tr class="table-row" @mouseenter="isHovered = true" @mouseleave="isHovered = false">
-    <td class="table-cell">
-      <div class="cell-content">
-        <Input
-          v-if="editField === 'title'"
-          ref="inputRefs.title"
-          v-model="editValue"
-          class="edit-input"
-          @keyup.enter="saveEdit"
-          @blur="saveEdit"
-        />
+    <DataTableCell
+      field="title"
+      :value="row.title || ''"
+      :edit-field="editField"
+      :edit-value="editValue"
+      input-type="text"
+      @start-edit="handleStartEdit"
+      @save-edit="saveEdit"
+      @cancel-edit="cancelEdit"
+      @update:edit-value="updateEditValue"
+    />
 
-        <span v-else @dblclick="startEdit('title')">{{ row.title || '' }}</span>
-      </div>
-    </td>
-    <td class="table-cell">
-      <div class="cell-content">
-        <span
-          v-if="row.col?.color"
-          class="color-marker"
-          :style="{ backgroundColor: row.col.color }"
-        ></span>
+    <DataTableCell
+      field="text"
+      :value="row.col?.text || ''"
+      :edit-field="editField"
+      :edit-value="editValue"
+      input-type="text"
+      :prefix="true"
+      :color="row.col?.color"
+      @start-edit="handleStartEdit"
+      @save-edit="saveEdit"
+      @cancel-edit="cancelEdit"
+      @update:edit-value="updateEditValue"
+    />
 
-        <Input
-          v-if="editField === 'text'"
-          ref="textInputRef"
-          v-model="editValue"
-          class="edit-input"
-          @keyup.enter="saveEdit"
-          @keyup.escape="cancelEdit"
-          @blur="saveEdit"
-        />
-        <span v-else @dblclick="startEdit('text')">{{ row.col?.text || '' }}</span>
-      </div>
-    </td>
-    <td class="table-cell">
-      <div class="cell-content">
-        <Input
-          v-if="editField === 'views'"
-          ref="inputRefs.views"
-          v-model="editValue"
-          type="number"
-          class="edit-input"
-          @keyup.enter="saveEdit"
-          @blur="saveEdit"
-        />
-        <span v-else @dblclick="startEdit('views')">{{ row.views || 0 }}</span>
-      </div>
-    </td>
+    <DataTableCell
+      field="views"
+      :value="row.views || 0"
+      :edit-field="editField"
+      :edit-value="editValue"
+      input-type="number"
+      @start-edit="handleStartEdit"
+      @save-edit="saveEdit"
+      @cancel-edit="cancelEdit"
+      @update:edit-value="updateEditValue"
+    />
+
     <td class="table-cell actions-cell">
       <div class="actions" v-show="!isEditing && isHovered">
         <Button v-for="(action, index) in renderedActions" :key="index" v-bind="action">
