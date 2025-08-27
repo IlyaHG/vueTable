@@ -65,19 +65,19 @@ const handleAdd = () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 1.5rem;
 }
 
 .table-header h2 {
   margin: 0;
-  font-size: 24px;
+  font-size: 1.5rem;
   font-weight: 600;
 }
 
 .add-btn {
   background-color: #007bff;
   color: white;
-  padding: 8px 16px;
+  padding: 0.5rem 1rem;
 }
 
 .add-btn:hover {
@@ -87,7 +87,7 @@ const handleAdd = () => {
 .loading,
 .error {
   text-align: center;
-  padding: 40px;
+  padding: 2.5rem;
   font-size: 18px;
 }
 
@@ -97,7 +97,7 @@ const handleAdd = () => {
 
 .table-wrapper {
   border: 1px solid #dee2e6;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   overflow: hidden;
 }
 
@@ -110,7 +110,7 @@ const handleAdd = () => {
 
 .data-table th {
   background-color: #f8f9fa;
-  padding: 12px;
+  padding: 0.75rem;
   text-align: left;
   font-weight: 600;
   border-bottom: 2px solid #dee2e6;

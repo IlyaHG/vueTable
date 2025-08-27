@@ -116,7 +116,7 @@ const renderedActions = getActions()
 .cell-content {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
 .color-marker {
@@ -133,7 +133,7 @@ const renderedActions = getActions()
 .actions {
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
 .action-btn {
@@ -146,9 +146,9 @@ const renderedActions = getActions()
 }
 
 .edit-input {
-  padding: 4px 8px;
+  padding: 0.25rem 0.5rem;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 0.25rem;
   font-size: 14px;
   min-width: 100px;
 }

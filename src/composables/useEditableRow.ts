@@ -23,6 +23,7 @@ export function useEditableRow(row: ITableRow, inputRefs: InputRefs) {
 
   const startEdit = async (field: EditableField) => {
     try {
+      if (!row.id) return
       store.startEditing(row.id)
       editField.value = field
       editValue.value = fieldMap[field]()
@@ -54,6 +55,8 @@ export function useEditableRow(row: ITableRow, inputRefs: InputRefs) {
     if (!editField.value) return
 
     try {
+      if (!row.id) return
+
       const payload: Partial<ITableRow> = {}
 
       if (editField.value === 'title') {
